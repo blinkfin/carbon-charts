@@ -390,7 +390,7 @@ export class CartesianScales extends Service {
 			(Tools.getProperty(axesOptions, AxisPositions.LEFT) === null &&
 				Tools.getProperty(axesOptions, AxisPositions.RIGHT) !== null) ||
 			Tools.getProperty(axesOptions, AxisPositions.RIGHT, 'main') ===
-				true ||
+			true ||
 			(dualAxes &&
 				Tools.getProperty(
 					axesOptions,
@@ -417,7 +417,7 @@ export class CartesianScales extends Service {
 			(Tools.getProperty(axesOptions, AxisPositions.BOTTOM) === null &&
 				Tools.getProperty(axesOptions, AxisPositions.TOP) !== null) ||
 			Tools.getProperty(axesOptions, AxisPositions.TOP, 'main') ===
-				true ||
+			true ||
 			(dualAxes &&
 				Tools.getProperty(
 					axesOptions,
@@ -571,9 +571,14 @@ export class CartesianScales extends Service {
 			axisPosition === this.getRangeAxisPosition()
 		) {
 			const { groupMapsTo } = options.data;
-			const dataValuesGroupedByKeys = this.model.getDataValuesGroupedByKeys(
-				dataGroupNames
+			// const dataValuesGroupedByKeys = this.model.getDataValuesGroupedByKeys(
+			// 	dataGroupNames
+			// );
+			const dataValuesGroupedByKeys = this.services.zoom.filterDataForRangeAxis(
+				this.model.getDataValuesGroupedByKeys(dataGroupNames),
+				{ stacked: true }
 			);
+
 			const nonStackedGroupsData = displayData.filter(
 				(datum) => !dataGroupNames.includes(datum[groupMapsTo])
 			);
@@ -589,20 +594,22 @@ export class CartesianScales extends Service {
 		} else {
 			allDataValues = [];
 
-			displayData.forEach((datum) => {
-				const value = datum[mapsTo];
-				if (Array.isArray(value) && value.length === 2) {
-					allDataValues.push(value[0]);
-					allDataValues.push(value[1]);
-				} else {
-					if (extendLinearDomainBy) {
-						allDataValues.push(
-							Math.max(datum[mapsTo], datum[extendLinearDomainBy])
-						);
+			this.services.zoom
+				.filterDataForRangeAxis(displayData)
+				.forEach((datum) => {
+					const value = datum[mapsTo];
+					if (Array.isArray(value) && value.length === 2) {
+						allDataValues.push(value[0]);
+						allDataValues.push(value[1]);
+					} else {
+						if (extendLinearDomainBy) {
+							allDataValues.push(
+								Math.max(datum[mapsTo], datum[extendLinearDomainBy])
+							);
+						}
+						allDataValues.push(value);
 					}
-					allDataValues.push(value);
-				}
-			});
+				});
 		}
 
 		if (scaleType !== ScaleTypes.TIME && includeZero) {

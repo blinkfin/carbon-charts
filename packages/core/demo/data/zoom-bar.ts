@@ -33,25 +33,27 @@ export const addZoomBarToOptions = (
 	if (configs.includeDefinedZoomBarData) {
 		options.title += ' - Defined zoom bar enabled';
 		options.zoomBar = {
+			updateRangeAxis: true,
 			top: {
 				enabled: true,
 				data: definedZoomBarData,
 				...(configs.sliderView
 					? {
-							type: 'slider_view',
-					  }
+						type: 'slider_view',
+					}
 					: null),
 			},
 		};
 	} else {
 		options.title += ' - Zoom bar enabled';
 		options.zoomBar = {
+			updateRangeAxis: true,
 			top: {
 				enabled: true,
 				...(configs.sliderView
 					? {
-							type: 'slider_view',
-					  }
+						type: 'slider_view',
+					}
 					: null),
 			},
 		};
